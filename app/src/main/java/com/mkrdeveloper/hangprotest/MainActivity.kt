@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
 
@@ -87,15 +87,19 @@ fun MainScreen(modifier: Modifier = Modifier) {
     game.startNewGame()
 
     var guessText by remember { mutableStateOf("") }
+    var wrongWords by remember { mutableStateOf("") }
 
-    val gameState = game.getCurrentGameState()
-    val wordState = gameState?.currentWordState?.joinToString(" ") ?: ""
-    val incorrectGuesses = gameState?.incorrectGuesses ?: 0
-
-    val x by remember {
-        mutableStateOf(0)
+    var gameState by remember {
+        mutableStateOf(game.getCurrentGameState())
     }
-    
+    var wordState by remember {
+        mutableStateOf(gameState?.currentWordState?.joinToString(" "))
+    }
+    //val wordState = gameState?.currentWordState?.joinToString(" ") ?: ""
+    var incorrectGuesses by remember {
+        mutableStateOf(gameState?.incorrectGuesses!!)
+    }
+
 
     val imageList = listOf(
         R.drawable.hangman0,
@@ -121,7 +125,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         /// val randomNumber = Random.nextInt(0, wordList.size)
 
                         game.startNewGame()
+                        gameState = game.getCurrentGameState()
 
+                        wordState = gameState?.currentWordState?.joinToString(" ").toString()
+                        incorrectGuesses = gameState?.incorrectGuesses!!
                         /*  Toast
                               .makeText(context, wordList[randomNumber], Toast.LENGTH_SHORT)
                               .show()*/
@@ -152,8 +159,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
             Text(text = "Word: $wordState")
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Incorrect guesses: $incorrectGuesses")
-            Text(text = "x: $x")
             Spacer(modifier = Modifier.height(16.dp))
+            Text(text = "Guessed Words: $wrongWords")
 
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(48.dp),
@@ -175,7 +182,14 @@ fun MainScreen(modifier: Modifier = Modifier) {
                             .clickable {
                                 guessText = keyboardList[index].lowercase()
                                 game.makeGuess(guessText[0])
-                                x
+
+                                wordState = gameState?.currentWordState
+                                    ?.joinToString(" ")
+                                    .toString()
+                                incorrectGuesses = gameState?.incorrectGuesses!!
+
+                                wrongWords += "$guessText "
+
 
                                 /* Toast
                                      .makeText(context, wordState, Toast.LENGTH_SHORT)

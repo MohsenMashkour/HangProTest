@@ -38,6 +38,6 @@ class HangmanGame(private val words: Array<String>, private val context: Context
             }
         }
         gameState = currentGameState
-        Toast.makeText(context, "$gameState", Toast.LENGTH_SHORT).show()
+       // Toast.makeText(context, "$gameState", Toast.LENGTH_SHORT).show()
     }
 }
